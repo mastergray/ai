@@ -214,8 +214,7 @@ plt.show()
 
 This code generates a plot of the interpolated curve, along with the original set of points. The interpolated_function function is used to evaluate the interpolated curve at a range of x values, and the plt.plot function is used to plot the curve. The plt.scatter function is used to plot the original set of points.
 
-### How can we calcualte the roation of an n-dimensional object?
-
+## How can we calcualte the roation of an n-dimensional object?
 
 To calculate the rotation of an n-dimensional object, you would first need to define the rotation matrix for that object. The rotation matrix is a square matrix that represents a rotation in n-dimensional space.
 
@@ -311,7 +310,7 @@ This program first shifts the coefficients using the numpy.fft.fftshift function
 Note that this is just a simple example of using the DFT in Python, and there are many other options and parameters that can be used to customize the transform.
 
 
-...Afte a very long conversation:
+**...after some conversation about smooth manfiolds**
 
 here's an example program that generates word embeddings using Gensim's Word2Vec algorithm and then uses the Mahalanobis distance to construct a Riemannian metric:
 
@@ -346,7 +345,7 @@ metric = np.linalg.inv(similarity)
 
 
 
-### ... an example implementation of the Transformer model using Keras:
+**... an example implementation of the Transformer model using Keras:**
 
 ```python
 import tensorflow as tf
@@ -434,7 +433,7 @@ def transformer_model(vocab_size, num_layers, units, d_model, num_heads, dropout
 
 
 
-### an example of a Transformer model in Keras that can be trained for text summarization:
+**an example of a Transformer model in Keras that can be trained for text summarization:**
 
 ```python
 import tensorflow as tf
@@ -515,7 +514,7 @@ class TransformerEncoder(Model):
 ```
 
 
-### Here's an example of how to use this program to train a transformer model on a text summarization task:
+**Here's an example of how to use this program to train a transformer model on a text summarization task:**
 
 ```python
 # Import necessary libraries
@@ -662,26 +661,140 @@ def get_positional_encoding(sequence_length, hidden_dim):
 
 ### Can you explain how this program works?
 
+1. The input text is preprocessed to remove any unnecessary characters or symbols, and then tokenized into individual words.
+
+2. Each word is then embedded using a pre-trained word embedding model, such as Word2Vec or GloVe, to generate a vector representation of the word.
+
+3. The vector representations of the words are then passed through a series of encoding layers in the transformer model to generate a condensed representation of the input text.
+
+4. The condensed representation is then passed through a decoding layer in the transformer model to generate a summary of the input text.
+
+5. During training, the program uses a dataset of input text and corresponding summaries to adjust the weights of the encoding and decoding layers in the transformer model. The weights are adjusted using backpropagation to minimize the difference between the predicted summaries and the actual summaries in the training data.
+
+6. The program also uses a Riemannian metric with Mahalanobis distance to measure the similarity between the embedded word vectors. This metric is used during training to adjust the weights of the model to better capture the structure of the embedded word vectors.
+
+Overall, the program is designed to take in an input text and generate a summary of that text using a transformer model with support for a Riemannian metric using Mahalanobis distance to improve the accuracy of the model.
+
+### How would you train this model? 
+
 Training a Transformer model with a Riemannian metric using Mahalanobis distance involves several steps:
 
-Data preprocessing: The input data must be preprocessed to convert it into a suitable format for training. This may involve tasks such as tokenization, padding, and encoding.
+1. Data preprocessing: The input data must be preprocessed to convert it into a suitable format for training. This may involve tasks such as tokenization, padding, and encoding.
 
-Model creation: The Transformer model with a Riemannian metric using Mahalanobis distance must be created using a deep learning framework such as Keras or TensorFlow. This involves specifying the architecture of the model, including the number of layers, the number of neurons per layer, and the activation functions to be used.
+2. Model creation: The Transformer model with a Riemannian metric using Mahalanobis distance must be created using a deep learning framework such as Keras or TensorFlow. This involves specifying the architecture of the model, including the number of layers, the number of neurons per layer, and the activation functions to be used.
 
-Training: The model is trained using a dataset of text and corresponding summaries. During training, the model iteratively adjusts the parameters of the model to minimize the difference between its predictions and the true summaries. This is done using an optimization algorithm such as stochastic gradient descent.
+3 .Training: The model is trained using a dataset of text and corresponding summaries. During training, the model iteratively adjusts the parameters of the model to minimize the difference between its predictions and the true summaries. This is done using an optimization algorithm such as stochastic gradient descent.
 
-Validation: The trained model must be validated to ensure that it is generalizing well to new data. This is done by evaluating the model's performance on a held-out validation set.
+4. Validation: The trained model must be validated to ensure that it is generalizing well to new data. This is done by evaluating the model's performance on a held-out validation set.
 
-Testing: Finally, the trained model can be used to generate summaries for new text inputs. The quality of the summaries can be evaluated using metrics such as ROUGE (Recall-Oriented Understudy for Gisting Evaluation).
-
-In terms of implementation, the program would involve defining the architecture of the Transformer model, defining the Riemannian metric using Mahalanobis distance, defining the loss function to be used during training, compiling the model using an optimization algorithm, and then training the model on a dataset of text and corresponding summaries. The trained model can then be used to generate summaries for new text inputs.
+5. Testing: Finally, the trained model can be used to generate summaries for new text inputs. The quality of the summaries can be evaluated using metrics such as ROUGE (Recall-Oriented Understudy for Gisting Evaluation).
 
 In terms of implementation, the program would involve defining the architecture of the Transformer model, defining the Riemannian metric using Mahalanobis distance, defining the loss function to be used during training, compiling the model using an optimization algorithm, and then training the model on a dataset of text and corresponding summaries. The trained model can then be used to generate summaries for new text inputs.
 
-### In terms of implementation, the program would involve defining the architecture of the Transformer model, defining the Riemannian metric using Mahalanobis distance, defining the loss function to be used during training, compiling the model using an optimization algorithm, and then training the model on a dataset of text and corresponding summaries. The trained model can then be used to generate summaries for new text inputs.
+In terms of implementation, the program would involve defining the architecture of the Transformer model, defining the Riemannian metric using Mahalanobis distance, defining the loss function to be used during training, compiling the model using an optimization algorithm, and then training the model on a dataset of text and corresponding summaries. The trained model can then be used to generate summaries for new text inputs.
+
+### Can you give an example of how to train this model?
+
+```python
+from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.optimizers import Adam
+
+# Initialize the model
+model = MahalanobisTransformerModel(num_layers=4, d_model=128, num_heads=8, dff=512, input_vocab_size=VOCAB_SIZE, 
+                                    target_vocab_size=VOCAB_SIZE, pe_input=10000, pe_target=6000, rate=0.1)
+
+# Initialize the optimizer
+learning_rate = CustomSchedule(d_model)
+optimizer = Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
+
+# Initialize the loss function
+loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True, reduction='none')
+
+# Initialize the metrics
+train_loss = tf.keras.metrics.Mean(name='train_loss')
+train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
+
+# Define the checkpoint directory and the checkpoint format
+checkpoint_path = "./checkpoints/train"
+ckpt = tf.train.Checkpoint(transformer=model, optimizer=optimizer)
+ckpt_manager = tf.train.CheckpointManager(ckpt, checkpoint_path, max_to_keep=5)
+
+# Define the training step function
+@tf.function(input_signature=(tf.TensorSpec(shape=(None, None), dtype=tf.int64), tf.TensorSpec(shape=(None, None), dtype=tf.int64)))
+def train_step(inp, tar):
+    tar_inp = tar[:, :-1]
+    tar_real = tar[:, 1:]
+  
+    # Create masks
+    enc_padding_mask, combined_mask, dec_padding_mask = create_masks(inp, tar_inp)
+  
+    with tf.GradientTape() as tape:
+        # Make predictions
+        predictions, _, _ = model(inp, tar_inp, True, enc_padding_mask, combined_mask, dec_padding_mask)
+
+        # Calculate the loss
+        loss = loss_function(loss_object, tar_real, predictions)
+
+    # Calculate the gradients and apply them to the optimizer
+    gradients = tape.gradient(loss, model.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+  
+    # Update the metrics
+    train_loss(loss)
+    train_accuracy(tar_real, predictions)
+
+# Start the training loop
+for epoch in range(EPOCHS):
+    start = time.time()
+  
+    # Reset the metrics
+    train_loss.reset_states()
+    train_accuracy.reset_states()
+
+    # Train the model using the training dataset
+    for (batch, (inp, tar)) in enumerate(train_dataset):
+        train_step(inp, tar)
+
+    # Save the checkpoint
+    if ckpt_manager.checkpoints:
+        ckpt_manager.save()
+  
+    # Print the metrics
+    print(f'Epoch {epoch + 1} Loss {train_loss.result():.4f} Accuracy {train_accuracy.result():.4f}')
+
+    # Calculate the time taken for each epoch
+    print(f'Time taken for 1 epoch: {time.time() - start:.2f} secs\n')
+```
 
 In this example, we define the model, optimizer, loss function, metrics, checkpoint, and training step function. We then start the training loop and iterate over the training dataset to train the model. After each epoch, we save the checkpoint and print the metrics.
 
+### How would you use this model?
+
+```python
+# Assume that we have already trained and saved the model
+# Load the saved model
+model = keras.models.load_model('path/to/saved/model')
+
+# Define the input text
+input_text = "This is a long piece of text that we want to summarize using our trained model. We hope that the model can generate a concise and accurate summary."
+
+# Preprocess the input text
+preprocessed_text = preprocess_text(input_text)
+
+# Convert the preprocessed input text into a sequence of word embeddings
+input_sequence = text_to_sequence(preprocessed_text, embedding_model)
+
+# Generate a summary for the input text
+summary_sequence = generate_summary(model, input_sequence, max_summary_length)
+
+# Convert the summary sequence back into text
+summary_text = sequence_to_text(summary_sequence, embedding_model)
+
+# Print the summary text
+print(summary_text)
+```
+
+This code assumes that the preprocess_text(), text_to_sequence(), generate_summary(), and sequence_to_text() functions have been defined and that the embedding_model and max_summary_length variables have been set appropriately. The preprocess_text() function preprocesses the input text (e.g., removing stopwords, stemming, etc.), the text_to_sequence() function converts the preprocessed text into a sequence of word embeddings, the generate_summary() function generates a summary for the input sequence using the trained model, and the sequence_to_text() function converts the summary sequence back into text.
 
 
 
