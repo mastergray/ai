@@ -1,4 +1,4 @@
-## Write a "hello world" program in Z80 assemply:
+## Write a "hello world" program in Z80 assembly:
 
 ```assembly
 org  0x100
