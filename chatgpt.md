@@ -214,7 +214,7 @@ plt.show()
 
 This code generates a plot of the interpolated curve, along with the original set of points. The interpolated_function function is used to evaluate the interpolated curve at a range of x values, and the plt.plot function is used to plot the curve. The plt.scatter function is used to plot the original set of points.
 
-## How can we calcualte the roation of an n-dimensional object?
+## How can we calculate the roation of an n-dimensional object?
 
 To calculate the rotation of an n-dimensional object, you would first need to define the rotation matrix for that object. The rotation matrix is a square matrix that represents a rotation in n-dimensional space.
 
@@ -275,6 +275,7 @@ Note that the details of this transformation depend on the specific context and 
 
 Certainly! Python has a built-in library called numpy that provides an implementation of the discrete Fourier transform (DFT), which is a digital version of the Fourier transform. Here's an example program that calculates the DFT of a signal using numpy:
 
+```python
 import numpy as np
 
 # Define a signal to be transformed
@@ -285,6 +286,7 @@ X = np.fft.fft(x)
 
 # Print the DFT coefficients
 print(X)
+```
 
 This program defines a signal x with values [1, 2, 3, 4]. It then calculates the DFT of the signal using the numpy.fft.fft function, which returns an array of complex coefficients representing the signal in the frequency domain. Finally, it prints the DFT coefficients.
 
@@ -310,9 +312,9 @@ This program first shifts the coefficients using the numpy.fft.fftshift function
 Note that this is just a simple example of using the DFT in Python, and there are many other options and parameters that can be used to customize the transform.
 
 
-**...after some conversation about smooth manfiolds**
+**Aafter some conversation about smooth manfiolds...**
 
-here's an example program that generates word embeddings using Gensim's Word2Vec algorithm and then uses the Mahalanobis distance to construct a Riemannian metric:
+Here's an example program that generates word embeddings using Gensim's Word2Vec algorithm and then uses the Mahalanobis distance to construct a Riemannian metric:
 
 ```python
 import gensim
@@ -342,8 +344,6 @@ similarity = np.exp(-mahalanobis_dist)
 metric = np.linalg.inv(similarity)
 
 ```
-
-
 
 **... an example implementation of the Transformer model using Keras:**
 
