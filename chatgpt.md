@@ -1,7 +1,7 @@
 ## Write a "hello world" program in Z80 assemply:
 
-```
-    org  0x100
+```assembly
+org  0x100
 
 start:
     ld   hl, message ; load the address of the message into hl
