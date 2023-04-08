@@ -220,16 +220,20 @@ To calculate the rotation of an n-dimensional object, you would first need to de
 
 For example, in 2D space, the rotation matrix is:
 
+```
 | cos(θ) -sin(θ) |
 | sin(θ) cos(θ) |
+```
 
 where θ is the angle of rotation.
 
 In 3D space, the rotation matrix is:
 
+```
 | cos(θ) -sin(θ) 0 |
 | sin(θ) cos(θ) 0 |
 | 0 0 1 |
+```
 
 where θ is the angle of rotation, and the third row and column are added for the third dimension.
 
@@ -239,9 +243,11 @@ Once you have the rotation matrix, you can apply it to the coordinates of the n-
 
 For example, if you have a 3D object represented by the coordinates (x, y, z), you can apply a rotation matrix R to it using the following equation:
 
+```
 | x' | | R11 R12 R13 | | x |
 | y' | = | R21 R22 R23 | * | y |
 | z' | | R31 R32 R33 | | z |
+```
 
 where (x', y', z') are the new coordinates of the rotated object.
 
@@ -312,9 +318,152 @@ This program first shifts the coefficients using the numpy.fft.fftshift function
 Note that this is just a simple example of using the DFT in Python, and there are many other options and parameters that can be used to customize the transform.
 
 
-**Aafter some conversation about smooth manfiolds...**
 
-Here's an example program that generates word embeddings using Gensim's Word2Vec algorithm and then uses the Mahalanobis distance to construct a Riemannian metric:
+**After some conversation about smooth manfiolds...**
+
+
+## Could the same be applied to word embeddings?
+
+In principle, it is possible to apply the concept of a smooth manifold to word embeddings. Word embeddings are high-dimensional vectors that represent words in a vector space, and we can think of the space of all possible word embeddings as a topological space.
+
+We can then define a collection of charts and transition maps that enable us to represent this space as a smooth manifold. For example, we could choose a subset of the space that corresponds to a small neighborhood around a particular word embedding, and define a smooth map that takes a word as input and outputs a point in a Euclidean space. This map would define a chart that represents the neighborhood of the space as a subset of the Euclidean space.
+
+We could then define other charts that cover other neighborhoods of the space, and use transition maps to relate the coordinates assigned by different charts. By combining these charts and transition maps, we can represent the entire space of word embeddings as a smooth manifold.
+
+One potential application of this approach is to use the tools of differential geometry and topology to study the geometry and topology of the space of word embeddings, and to develop new techniques for natural language processing and machine learning. For example, we could use the concept of geodesics on the manifold to define new distance measures between word embeddings, or we could use the topology of the manifold to define new clustering algorithms for text data.
+
+### How can we calculate such geodesics?
+
+To calculate geodesics on a smooth manifold, we need to define a notion of distance or length between points on the manifold. This is typically done using a Riemannian metric, which is a smoothly varying inner product on the tangent space at each point of the manifold.
+
+Once we have a Riemannian metric, we can define the length of a curve on the manifold as the integral of the norm of its velocity vector with respect to the Riemannian metric. We can then define a geodesic as a curve that locally minimizes the length between two given points on the manifold.
+
+In practice, the calculation of geodesics on a smooth manifold can be quite challenging, especially for high-dimensional manifolds or manifolds with complicated topologies. One approach is to use numerical methods to approximate the geodesic. For example, we can use gradient descent algorithms to minimize the length of a curve between two given points on the manifold.
+
+Another approach is to use techniques from optimal control theory, which is a branch of mathematics that studies the optimal behavior of dynamical systems. In this approach, we view the geodesic as a trajectory of a dynamical system and use the tools of optimal control theory to find the optimal trajectory that minimizes the length between two given points.
+
+Overall, calculating geodesics on a smooth manifold can be a challenging problem, but it is an important tool for understanding the geometry and topology of the manifold, and for developing new applications in fields such as robotics, natural language processing, and machine learning.
+
+### How can we construct a Riemannian metric from a word embedding? 
+
+Constructing a Riemannian metric from a word embedding is not a straightforward task, as there is no natural inner product or notion of distance between word embeddings.
+
+However, there are some approaches that can be used to construct a Riemannian metric from a word embedding. One such approach is to use a technique called Fisher information metric, which is a Riemannian metric that is defined based on the Fisher information matrix of a statistical model.
+
+In this approach, we can think of the word embeddings as being generated by a statistical model, and the Fisher information metric is defined based on the second derivative of the log-likelihood function of the model with respect to the parameters. The Fisher information metric is a Riemannian metric that measures the local curvature of the statistical manifold, and can be used to define a notion of distance between word embeddings.
+
+Another approach is to use a technique called kernel-based metric learning, which is a method for learning a Riemannian metric from a set of pairwise similarity or dissimilarity constraints. In this approach, we can use the pairwise similarity or dissimilarity between pairs of words as constraints, and learn a Riemannian metric that optimally satisfies these constraints.
+
+Overall, constructing a Riemannian metric from a word embedding is an active area of research, and there are many different approaches that can be used depending on the specific problem and application.
+
+### Can you write a program in Python that can apply the Fisher information metric to a word embedding?
+
+First, we need to define a statistical model that generates the word embeddings. For simplicity, let's assume that the word embeddings are generated by a multivariate normal distribution with mean zero and a covariance matrix that is parameterized by a set of learnable parameters. We can represent the learnable parameters as a vector $\theta$, and the covariance matrix as $C(\theta)$.
+
+To apply the Fisher information metric to the word embedding, we can compute the inverse of the Fisher information matrix, which gives us a positive definite matrix that can be used as a Riemannian metric. We can then use this metric to compute geodesics on the manifold of word embeddings.
+
+Here is some sample Python code that computes the Fisher information metric for a set of word embeddings:
+
+```python
+import numpy as np
+
+# Define the statistical model
+def covariance_matrix(theta):
+    # Construct the covariance matrix from the learnable parameters theta
+    ...
+
+def log_likelihood(theta, embeddings):
+    # Compute the log-likelihood of the embeddings under the statistical model
+    ...
+
+def fisher_information(theta, embeddings):
+    # Compute the Fisher information matrix at the given parameter values
+    n = len(embeddings)
+    G = np.zeros((len(theta), len(theta)))
+    for i in range(len(theta)):
+        for j in range(len(theta)):
+            G[i,j] = -np.mean(np.diag(covariance_matrix(theta).dot(np.outer(embeddings[:,i], embeddings[:,j]).dot(covariance_matrix(theta)))) - np.trace(covariance_matrix(theta).dot(np.outer(embeddings[:,j], embeddings[:,i]))))
+    return G
+
+# Compute the Fisher information metric at a specific point
+theta0 = ...
+embeddings = ...
+G = np.linalg.inv(fisher_information(theta0, embeddings))
+```
+
+Note that in practice, computing the Fisher information matrix and its inverse can be computationally expensive, especially for high-dimensional word embeddings. There are also other approaches to constructing Riemannian metrics for word embeddings that may be more efficient or more suitable for specific applications.
+
+### What's another approach to constructing Riemannian metrics for word embeddings that may be more efficient?
+
+Another approach to constructing Riemannian metrics for word embeddings is to use the Mahalanobis distance. The Mahalanobis distance is a distance metric that takes into account the covariance structure of the data.
+
+To compute the Mahalanobis distance between two word embeddings, we need to estimate the covariance matrix of the embedding space. One way to do this is to compute the sample covariance matrix from a set of training embeddings, and then apply a regularization method to ensure that the matrix is positive definite. Once we have the covariance matrix, we can invert it to obtain the Riemannian metric for the embedding space.
+
+Here is some sample Python code that computes the Mahalanobis distance between two word embeddings using the estimated covariance matrix:
+
+```python
+import numpy as np
+from scipy.linalg import sqrtm
+
+# Compute the covariance matrix of the embedding space
+embeddings = ...
+covariance = np.cov(embeddings, rowvar=False)
+# Apply regularization to ensure positive definiteness
+covariance = covariance + np.eye(len(covariance)) * 1e-6
+
+# Compute the inverse covariance matrix, which is the Riemannian metric
+metric = np.linalg.inv(covariance)
+
+# Compute the Mahalanobis distance between two embeddings
+x = ...
+y = ...
+distance = np.sqrt((x-y).dot(metric).dot(x-y))
+```
+
+This approach has the advantage of being computationally efficient, since computing the Mahalanobis distance only requires a matrix multiplication and a square root operation. However, it may not capture all the geometric properties of the embedding space, and may not be suitable for all applications.
+
+### What does "covariance structure of the data" mean? 
+
+The covariance structure of the data refers to the way in which the variables in a dataset vary together. In the case of word embeddings, each word is represented by a vector in a high-dimensional space, and the covariance structure describes how these vectors are correlated with each other.
+
+For example, if two words tend to appear in similar contexts, their embeddings will be more similar to each other, and their covariance will be higher. On the other hand, if two words have very different meanings and are rarely used in similar contexts, their embeddings will be less similar and their covariance will be lower.
+
+By taking into account the covariance structure of the data, we can construct a Riemannian metric that reflects the geometry of the embedding space more accurately. This can help us perform more accurate computations, such as measuring distances between words or finding the shortest path between two words.
+
+### Can you write a program in Python that generates a word embeding for some corpus of text?
+
+Yes, there are many libraries in Python that can be used to generate word embeddings for a corpus of text. One of the most popular libraries is Gensim, which provides an implementation of the Word2Vec algorithm.
+
+Here is an example program that uses Gensim to generate word embeddings for a corpus of text:
+
+```python
+import gensim
+from gensim.models import Word2Vec
+from nltk.corpus import brown
+
+# Load the Brown corpus
+sentences = brown.sents()
+
+# Train the Word2Vec model
+model = Word2Vec(sentences, size=100, window=5, min_count=5, workers=4)
+
+# Save the model to a file
+model.save("brown_embedding.model")
+
+# Load the model from a file
+model = Word2Vec.load("brown_embedding.model")
+
+# Get the embedding vector for a word
+vector = model.wv['dog']
+```
+
+In this program, we first load the Brown corpus from the NLTK library. We then train a Word2Vec model on the corpus, using a vector size of 100, a window size of 5, a minimum count of 5, and 4 worker threads. The resulting model is then saved to a file.
+
+To load the model from the file, we use the Word2Vec.load() method. We can then get the embedding vector for a word by using the wv attribute of the model and passing in the word as an index.
+
+Note that this is just a simple example, and there are many other options and parameters that can be used to fine-tune the Word2Vec model and generate better embeddings for specific applications.
+
+### Can you modify that program to support  constructing Riemannian metrics using the Mahalanobis distance?
 
 ```python
 import gensim
@@ -345,7 +494,22 @@ metric = np.linalg.inv(similarity)
 
 ```
 
-**... an example implementation of the Transformer model using Keras:**
+### What could I use this program for?
+
+This program can be used to generate a word embedding for a given corpus of text and then construct a Riemannian metric using the Mahalanobis distance. This Riemannian metric can be used for various applications in natural language processing, such as:
+
+1. Word similarity and relatedness: The Riemannian metric can be used to measure the similarity or relatedness between two words. For example, we can find the words that are most similar to a given word or the words that are most related to a given concept.
+
+2. Semantic search: The Riemannian metric can be used to perform semantic search on a corpus of text. Given a query, we can find the documents or sentences that are most semantically similar to the query.
+
+3. Word analogy and completion: The Riemannian metric can be used to perform word analogy and completion tasks. For example, we can find the word that is to "king" as "woman" is to "queen" or the missing word in the phrase "the cat sat on the [__]".
+
+4. Clustering and classification: The Riemannian metric can be used for clustering and classification tasks in natural language processing. For example, we can cluster similar words together or classify documents into different categories based on their semantic content.
+
+Overall, the program provides a way to generate a word embedding and construct a Riemannian metric that can be used for a wide range of applications in natural language processing.
+
+
+## Can you write a full Transformer model in Python using Keras?
 
 ```python
 import tensorflow as tf
@@ -431,9 +595,87 @@ def transformer_model(vocab_size, num_layers, units, d_model, num_heads, dropout
 
 ```
 
+### Can you give me an example of how to use this program?
 
+```python
+# Import necessary libraries
+import numpy as np
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import load_model
 
-**an example of a Transformer model in Keras that can be trained for text summarization:**
+# Define tokenizer and maximum sequence length
+tokenizer = Tokenizer()
+MAX_SEQ_LEN = 100
+
+# Load tokenizer from file
+with open('tokenizer.pickle', 'rb') as handle:
+    tokenizer = pickle.load(handle)
+
+# Load the trained model from file
+model = load_model('sentiment_model.h5')
+
+# Define some example movie reviews
+reviews = [
+    "This movie was terrible. The acting was bad and the plot was predictable.",
+    "I loved this movie! The characters were well-developed and the story was engaging.",
+    "This movie was just okay. It wasn't great, but it wasn't terrible either."
+]
+
+# Convert the reviews to sequences of word indices
+sequences = tokenizer.texts_to_sequences(reviews)
+
+# Pad the sequences to a fixed length
+padded_sequences = pad_sequences(sequences, maxlen=MAX_SEQ_LEN)
+
+# Make predictions using the model
+predictions = model.predict(padded_sequences)
+
+# Print the predictions
+for i, review in enumerate(reviews):
+    if predictions[i] > 0.5:
+        print(f"{review}\nSentiment: Positive\n")
+    else:
+        print(f"{review}\nSentiment: Negative\n")
+```
+
+In this example, we load the trained Transformer model from file and use it to predict the sentiment of three movie reviews. We first convert the reviews to sequences of word indices using the tokenizer, pad the sequences to a fixed length, and then use the model's predict() method to make sentiment predictions. Finally, we print out the predicted sentiment for each review.
+
+### Can you give an example of how this transformer could be used to summarize text?
+
+```python
+import tensorflow as tf
+import numpy as np
+from transformers import pipeline, AutoTokenizer, TFAutoModel
+
+# Load the pre-trained Transformer model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("t5-small")
+model = TFAutoModel.from_pretrained("t5-small")
+
+# Define a function to generate a summary for a given input text
+def summarize(text):
+    # Encode the input text and add special tokens for summarization
+    input_ids = tokenizer.encode(text, return_tensors="tf", max_length=512, truncation=True)
+    input_ids = tf.concat([[0], input_ids[0], [1]], axis=0)
+    
+    # Generate a summary using the pre-trained Transformer model
+    output = model.generate(input_ids=input_ids, max_length=100, num_beams=4, early_stopping=True)
+    
+    # Decode the summary tokens back into text
+    summary = tokenizer.decode(output[0], skip_special_tokens=True)
+    
+    return summary
+
+# Example usage
+text = "The quick brown fox jumps over the lazy dog. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquet purus vel dolor tristique, eu molestie eros ultricies. Maecenas malesuada mi ut tincidunt laoreet. Nullam tempor enim ut orci eleifend imperdiet. Aliquam blandit quam quis augue efficitur, a lacinia urna tincidunt. Cras iaculis dolor sed ultricies tincidunt."
+summary = summarize(text)
+print(summary)
+```
+
+This program uses the T5 Transformer model to generate a summary for a given input text. The summarize function takes a string of text as input, encodes it using the tokenizer, and passes it through the pre-trained Transformer model to generate a summary. The generated summary is then decoded back into text using the tokenizer, and returned as the output of the function.
+
+Note that this is just a simple example, and there are many other approaches and techniques for text summarization using deep learning models.
+
+## Can you write a full Transformer model in Python using Keras that can be trained to summarize text?
 
 ```python
 import tensorflow as tf
@@ -513,8 +755,7 @@ class TransformerEncoder(Model):
         super(TransformerEncoder, self
 ```
 
-
-**Here's an example of how to use this program to train a transformer model on a text summarization task:**
+### What is an example of how to use this program?
 
 ```python
 # Import necessary libraries
@@ -575,10 +816,39 @@ predicted_sequence = model.predict(test_input_sequences)
 predicted_text = tokenizer.sequences_to_texts(predicted_sequence.argmax(axis=2))[0]
 print(predicted_text)
 ```
-
 In this example, we first define the hyperparameters for the model, such as the maximum sequence length, maximum vocabulary size, embedding dimension, number of hidden units, number of heads, dropout rate, number of epochs, and batch size. We then load the dataset, tokenize the input and target text, and pad the sequences to a fixed length. We define the model architecture using Keras layers, including an input layer, embedding layer, dropout layer, encoder layer, decoder layer, and output layer. We compile the model using the sparse categorical cross-entropy loss function and the Adam optimizer. We then train the model on the input and target sequences for a certain number of epochs and with a certain batch size. Finally, we use the trained model to summarize a test input text and output the predicted summary.
 
-## Can you write a transformer model in Python using Keras that supports a Riemannian metric using Mahalanobis distance?
+### How would we create a data set for training this model?
+
+To create a dataset for training a text summarization model using the Transformer architecture, we need a large corpus of documents with their corresponding summaries. There are several sources from which we can obtain such data, such as:
+
+1. News articles: There are several datasets of news articles and their summaries available online, such as the CNN/Daily Mail dataset, the Gigaword dataset, and the New York Times dataset.
+
+2. Scientific papers: Several datasets of scientific papers and their summaries are available online, such as the PubMed dataset and the Arxiv dataset.
+
+3. Social media posts: We can also obtain data from social media platforms such as Twitter and Facebook, where users often write short posts that can be used as summaries.
+
+Once we have obtained the data, we need to preprocess it by tokenizing the text into words, removing stop words, and converting the text to numerical representations that can be fed into the model. We also need to split the data into training, validation, and test sets.
+
+After preprocessing the data, we can use it to train our Transformer model for text summarization.
+
+### How would we prepare data for training for program above?
+
+To prepare the data for training the program above, we need to first preprocess the raw text data. Here are the steps:
+
+1. Tokenization: Split the text into individual words or subwords, depending on the tokenizer used. We can use the Tokenizer class from Keras for this step.
+ 
+2. Padding: We need to make sure that all the input sequences have the same length so that we can create batches of data. We can pad the sequences with zeros using the pad_sequences function from Keras.
+
+3. Create input-output pairs: We need to create input-output pairs for the training data. For text summarization, the input is the original text and the output is the summary. We can create these pairs by selecting a subset of the original text as the summary and using the remaining text as the input.
+
+Once the data is prepared, we can feed it to the model for training.
+
+## For a full transformer model in Python using Keras that can be trained to summarize text, would it be made more effective by using a Riemannian metric using Mahalanobis distance? 
+
+Using a Riemannian metric with Mahalanobis distance could potentially improve the performance of the transformer model in some specific natural language processing tasks, such as text classification or named entity recognition. However, for text summarization, the effectiveness of using such a metric is not yet established and may depend on the specific application and dataset being used. It is also worth noting that incorporating a Riemannian metric into a transformer model may require significant modifications to the model architecture and training process, and could result in longer training times and increased computational complexity. Therefore, whether or not using a Riemannian metric with Mahalanobis distance would be more effective for a transformer model trained for text summarization would require further research and experimentation.
+
+### Can you write a transformer model in Python using Keras that supports a Riemannian metric using Mahalanobis distance?
 
 
 ```python
