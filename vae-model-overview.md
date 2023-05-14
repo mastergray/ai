@@ -659,9 +659,166 @@ print('Input Text:', input_text)
 print('Generated Text:', generated_text
 ```
 
+## VAE For Text Variations Using Constraints
+
+It is possible to constrain the generation of variations in a VAE model for text by manipulating the latent space. The latent space in a VAE is a continuous vector space, and each point in the latent space represents a different encoding of the input data.
+
+Here are a few approaches you can consider to constrain the generation process:
+
+1. Latent Space Constraints: You can impose constraints on specific regions or subspaces of the latent space where certain variations are not desired. For example, you can define boundaries or regions in the latent space that correspond to specific attributes or characteristics that should be avoided in the generated variations. During the generation process, you can sample latent vectors only from the desired regions of the latent space to enforce the constraints.
+
+2. Latent Space Interpolation: Instead of randomly sampling latent vectors from the entire latent space, you can perform interpolation between two or more latent vectors. By controlling the interpolation path, you can guide the generation process to explore specific directions in the latent space that correspond to desired variations while avoiding undesired ones. This allows you to navigate the latent space and generate variations that adhere to the defined constraints.
+
+3. Conditional Generation: You can incorporate additional input variables or conditions to guide the generation process. For example, you can include additional attributes or labels that specify the desired constraints for generating variations. During the generation, you can condition the model on these variables to control the generated output and ensure that the variations adhere to the specified constraints.
+
+4. Post-Processing and Filtering: After generating variations, you can apply post-processing steps and filters to eliminate or modify undesired samples. This can involve using rules, heuristics, or external classifiers to evaluate the generated variations and remove or modify those that do not meet the specified constraints.
+
+It's important to note that implementing constraints in VAE-based text generation can be challenging, as the mapping between the latent space and the generated text is complex and nonlinear. Careful design and experimentation are required to effectively enforce constraints while maintaining the coherence and quality of the generated variations.
+
+To represent certain text as constraints for the VAE model, you can encode the desired constraints into a latent vector and use it during training or generation. Here's an approach to represent text as constraints:
+
+1. Preprocess the text: Preprocess the constraint text in a similar way as the training data. This may include tokenization, padding, and converting it to a numerical representation (e.g., word embeddings or one-hot encoding) that matches the input format of your VAE model.
+
+2. Encode the constraints: Pass the preprocessed constraint text through the encoder part of the VAE model to obtain the latent vector representation. In the VAE implementation, you can modify the encode method to return the latent vectors. Store these latent vectors as the constraints.
+
+3. Train the VAE model with constraints: During training, you can include the constraint latent vectors along with the input training data. Modify the train method of the VAE class to accept the constraint vectors. In the vae_loss function, calculate the distance between the sampled latent vector (z_mean) and the constraint vectors. Penalize the loss if the distance exceeds a certain threshold. This encourages the generated samples to adhere to the provided constraints.
+
+Generate variations with constraints: To generate variations with constraints, you can provide the constraint latent vectors as input to the decoder part of the VAE model. By passing these vectors through the decoder, you can generate variations that adhere to the specified constraints.
+
+Here's an example modification of the generate method in the VAE class to incorporate constraints:
+
+In this modified `generate_with_constraints` method, the `z_sample` argument represents the random latent vectors for generating variations, and the `constraints` argument represents the constraint latent vectors. The method passes the constraint vectors through the decoder to generate variations that adhere to the provided constraints.
+
+By including the constraint text as part of the training process and generating variations using the constraint latent vectors, you can guide the VAE model to produce samples that conform to the specified text constraints.
+
+```python
+def generate_with_constraints(self, z_sample, constraints):
+    generated_variations = []
+    for constraint in constraints:
+        decoded_variation = self.decoder.predict(constraint)
+        generated_variations.append(decoded_variation)
+    return generated_variations
+```
+
+### Example Implementation 
+
+```python
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers
+from tensorflow.keras.models import Model
+from tensorflow.keras.losses import mse, binary_crossentropy
+
+class VAE:
+    def __init__(self, input_dim, latent_dim, intermediate_dim=512):
+        self.input_dim = input_dim
+        self.latent_dim = latent_dim
+        self.intermediate_dim = intermediate_dim
+        
+        self.encoder = self.build_encoder()
+        self.decoder = self.build_decoder()
+        
+        x = layers.Input(shape=(input_dim,))
+        z_mean, z_log_var, z = self.encoder(x)
+        x_hat = self.decoder(z)
+        self.vae = Model(x, x_hat)
+        self.vae.compile(loss=self.vae_loss, optimizer='adam')
+    
+    def build_encoder(self):
+        x = layers.Input(shape=(self.input_dim,))
+        h = layers.Dense(self.intermediate_dim, activation='relu')(x)
+        z_mean = layers.Dense(self.latent_dim)(h)
+        z_log_var = layers.Dense(self.latent_dim)(h)
+        z = layers.Lambda(self.sample_z)([z_mean, z_log_var])
+        return Model(x, [z_mean, z_log_var, z])
+    
+    def build_decoder(self):
+        z = layers.Input(shape=(self.latent_dim,))
+        h = layers.Dense(self.intermediate_dim, activation='relu')(z)
+        x_hat = layers.Dense(self.input_dim, activation='sigmoid')(h)
+        return Model(z, x_hat)
+    
+    def sample_z(self, args):
+        z_mean, z_log_var = args
+        epsilon = tf.keras.backend.random_normal(shape=tf.shape(z_mean))
+        return z_mean + tf.exp(z_log_var / 2) * epsilon
+    
+    def vae_loss(self, x, x_hat):
+        reconstruction_loss = binary_crossentropy(x, x_hat) * self.input_dim
+        kl_loss = 1 + self.encoder.output[1] - tf.square(self.encoder.output[0]) - tf.exp(self.encoder.output[1])
+        kl_loss = -0.5 * tf.reduce_sum(kl_loss, axis=-1)
+        if self.constraints:
+            z_mean, _, _ = self.encoder(x)
+            distance_from_constraint = tf.reduce_sum(tf.square(z_mean - self.constraints), axis=-1)
+            constraint_loss = 100 * tf.maximum(distance_from_constraint - self.constraint_threshold, 0)
+            return reconstruction_loss + kl_loss + constraint_loss
+        else:
+            return reconstruction_loss + kl_loss
+    
+    def train(self, x_train, x_val=None, epochs=50, batch_size=128, constraints=None, constraint_threshold=0.5):
+        self.constraints = constraints
+        self.constraint_threshold = constraint_threshold
+        if x_val is not None:
+            validation_data = (x_val, x_val)
+        else:
+            validation_data = None
+        self.vae.fit(x_train, x_train,
+                     epochs=epochs,
+                     batch_size=batch_size,
+                     validation_data=validation_data)
+        
+    def encode(self, x):
+        z_mean, _, _ = self.encoder.predict(x)
+        return z_mean
+    
+    def decode(self, z):
+        return self.decoder.predict(z)
+    
+    def generate(self, z_sample):
+        return self.decoder.predict(z_sample)
+```
+
+### Example Useage
+
+```python
+# Example usage
+
+# Assuming you have preprocessed data in the form of a tokenized and padded sequence
+x_train = ...
+
+# Create an instance of the VAE model
+input_dim = len(tokenizer.word_index) + 1  # Add 1 for padding token
+latent_dim = 32
+vae = VAE(input_dim, latent_dim)
+
+# Train the VAE model with constraints
+constraints = np.array([tokenizer.texts_to_sequences(['constraint_text'])[0]])  # Convert constraint text to sequence
+vae.train(x_train, constraints=constraints, epochs=50, batch_size=128)
+
+# Generate variations with constraint
+z_sample = np.random.normal(size=(num_variations, latent_dim))  # Randomly sample latent vectors
+generated_variations = vae.generate(z_sample)
+
+# Convert generated variations back to text
+decoded_variations = []
+for variation in generated_variations:
+    decoded_variation = tokenizer.sequences_to_texts([variation])[0]
+    decoded_variations.append(decoded_variation)
+
+# Print the generated variations
+for variation in decoded_variations:
+    print(variation)
+```
+
+In this example, we create an instance of the `VAE` class with the desired input and latent dimensions. Then, we train the VAE model using the `train` method, passing in the preprocessed training data and the desired constraints. During training, the loss function considers both the reconstruction loss, KL divergence, and the constraint loss if constraints are provided.
+
+After training, we can generate variations by sampling random latent vectors using `np.random.normal`. These latent vectors are then passed through the decoder network to generate the variations. The generated variations are converted back to text using the tokenizer.
+
+Please note that you would need to adapt the code to fit your specific dataset, preprocessing steps, and any additional modifications you require.
+
 ## Misc
 
-### GRUB vs. LTSM
+### GRU vs. LTSM
 
 The choice of using LSTM (Long Short-Term Memory) instead of GRU (Gated Recurrent Unit) in the decoder part of the Variational Autoencoder (VAE) model is not fixed and can be adapted based on the specific requirements and characteristics of the task and dataset.
 
