@@ -683,23 +683,6 @@ To represent certain text as constraints for the VAE model, you can encode the d
 
 3. Train the VAE model with constraints: During training, you can include the constraint latent vectors along with the input training data. Modify the train method of the VAE class to accept the constraint vectors. In the vae_loss function, calculate the distance between the sampled latent vector (z_mean) and the constraint vectors. Penalize the loss if the distance exceeds a certain threshold. This encourages the generated samples to adhere to the provided constraints.
 
-Generate variations with constraints: To generate variations with constraints, you can provide the constraint latent vectors as input to the decoder part of the VAE model. By passing these vectors through the decoder, you can generate variations that adhere to the specified constraints.
-
-Here's an example modification of the generate method in the VAE class to incorporate constraints:
-
-In this modified `generate_with_constraints` method, the `z_sample` argument represents the random latent vectors for generating variations, and the `constraints` argument represents the constraint latent vectors. The method passes the constraint vectors through the decoder to generate variations that adhere to the provided constraints.
-
-By including the constraint text as part of the training process and generating variations using the constraint latent vectors, you can guide the VAE model to produce samples that conform to the specified text constraints.
-
-```python
-def generate_with_constraints(self, z_sample, constraints):
-    generated_variations = []
-    for constraint in constraints:
-        decoded_variation = self.decoder.predict(constraint)
-        generated_variations.append(decoded_variation)
-    return generated_variations
-```
-
 ### Example Implementation 
 
 ```python
@@ -815,6 +798,353 @@ In this example, we create an instance of the `VAE` class with the desired input
 After training, we can generate variations by sampling random latent vectors using `np.random.normal`. These latent vectors are then passed through the decoder network to generate the variations. The generated variations are converted back to text using the tokenizer.
 
 Please note that you would need to adapt the code to fit your specific dataset, preprocessing steps, and any additional modifications you require.
+
+### Improving Contstaints
+
+Here's an example modification of the generate method in the VAE class to incorporate constraints:
+
+In this modified `generate_with_constraints` method, the `z_sample` argument represents the random latent vectors for generating variations, and the `constraints` argument represents the constraint latent vectors. The method passes the constraint vectors through the decoder to generate variations that adhere to the provided constraints.
+
+By including the constraint text as part of the training process and generating variations using the constraint latent vectors, you can guide the VAE model to produce samples that conform to the specified text constraints.
+
+```python
+def generate_with_constraints(self, z_sample, constraints):
+    generated_variations = []
+    for constraint in constraints:
+        decoded_variation = self.decoder.predict(constraint)
+        generated_variations.append(decoded_variation)
+    return generated_variations
+```
+
+To effectively use constraints in the VAE model, it is recommended to pass the constraint vectors (latent space representations) rather than the actual constraint strings. This ensures compatibility with the model's input and facilitates the constraint enforcement process.
+
+Here's an updated version of the example code to illustrate how you could pass constraint vectors to the `generate_with_constraints` method:
+
+```python
+# Example usage
+
+# Assuming you have preprocessed data in the form of a tokenized and padded sequence
+x_train = ...
+
+# Create an instance of the VAE model
+input_dim = len(tokenizer.word_index) + 1  # Add 1 for padding token
+latent_dim = 32
+vae = VAE(input_dim, latent_dim)
+
+# Train the VAE model with constraints
+constraint_text = "constraint_text"
+constraint_vector = tokenizer.texts_to_sequences([constraint_text])[0]  # Convert constraint text to sequence
+constraint_latent = vae.encode(np.array([constraint_vector]))  # Encode constraint vector to obtain the latent representation
+vae.train(x_train, constraints=constraint_latent, epochs=50, batch_size=128)
+
+# Generate variations with constraints
+num_variations = 5
+z_sample = np.random.normal(size=(num_variations, latent_dim))  # Randomly sample latent vectors
+generated_variations = vae.generate_with_constraints(z_sample, [constraint_latent])
+
+# Convert generated variations back to text
+decoded_variations = []
+for variation in generated_variations:
+    decoded_variation = tokenizer.sequences_to_texts([variation])[0]
+    decoded_variations.append(decoded_variation)
+
+# Print the generated variations
+for variation in decoded_variations:
+    print(variation)
+```
+
+In this updated example, the constraint text is processed using the tokenizer to obtain the constraint vector (`constraint_vector`). The constraint vector is then encoded using the VAE's encode method to obtain the corresponding constraint latent representation (`constraint_latent`). During training, the `constraint_latent` is passed to the VAE's `train` method.
+
+For generating variations with constraints, you can pass the randomly sampled latent vectors (`z_sample`) and the constraint latent vector (`constraint_latent`) to the `generate_with_constraints` method. The method will generate variations that adhere to the provided constraint.
+
+By converting the constraint text to its corresponding vector representation and using the latent vectors for constraint enforcement, you can effectively utilize constraints within the VAE model for generating variations.
+
+Implementing sentence-level constraints in the VAE model requires additional considerations and modifications to the architecture and training process. Here's a high-level overview of the steps involved:
+
+1. Preprocessing: Preprocess your training data, including tokenization, padding, and converting sentences to numerical representations that match the input format of your VAE model.
+
+2. Modify the model architecture: Update the model architecture to handle sentence-level constraints. One approach is to incorporate an additional input branch in the encoder network that takes in the sentence-level constraint representation. This branch can consist of a separate LSTM layer that processes the constraint representation. The outputs of the constraint branch can then be combined with the main encoder outputs before proceeding to the latent space.
+
+3. Modify the training process: During training, you need to provide both the input data and the corresponding sentence-level constraint representations. Modify the loss function to consider the reconstruction loss, KL divergence, and an additional constraint loss that encourages the generated variations to align with the provided sentence-level constraints.
+
+4. Generate variations with sentence-level constraints: When generating variations, you need to encode the sentence-level constraint representation and incorporate it into the decoding process. You can concatenate or combine the constraint representation with the sampled latent vectors before passing them through the decoder network to generate variations that adhere to the sentence-level constraints.
+
+Please note that implementing sentence-level constraints requires careful consideration and experimentation to achieve desirable results. The specific modifications to the model architecture and loss function may vary depending on the details of your VAE implementation and the nature of the constraints you want to enforce.
+
+Here's a simplified code snippet illustrating the modification of the VAE class to incorporate sentence-level constraints:
+
+```python
+from tensorflow.keras.layers import Input, LSTM, concatenate
+
+class VAE:
+    def __init__(self, input_dim, latent_dim):
+        # ... initialize the VAE model ...
+
+    def build_encoder(self):
+        # ... define the encoder network architecture ...
+
+        # Additional branch for sentence-level constraints
+        constraint_input = Input(shape=(constraint_dim,))
+        constraint_branch = LSTM(latent_dim)(constraint_input)
+
+        # Merge encoder outputs and constraint branch
+        encoder_outputs = concatenate([encoder_outputs, constraint_branch])
+
+        # ... continue with the encoder network ...
+
+    def train(self, x_train, constraint_data, epochs, batch_size):
+        # ... modify the training process to incorporate constraint_data ...
+
+    def generate_with_constraints(self, z_sample, constraint_vector):
+        # ... modify the generation process to incorporate constraint_vector ...
+
+# Rest of the code remains similar to the previous example
+```
+
+In this modified VAE class, the build_encoder method is updated to include an additional branch for the sentence-level constraints. The constraint data is passed through an LSTM layer (constraint_branch) to obtain its representation. The constraint branch outputs are then concatenated with the main encoder outputs before proceeding to the latent space. The train method and generate_with_constraints method need to be modified accordingly to handle the sentence-level constraints.
+
+Remember that this is a simplified example, and you may need to adapt it to fit your specific implementation and requirements. Experimentation and fine-tuning of the model architecture, loss function, and training process are necessary to achieve satisfactory results with sentence-level constraints.
+
+## Example Implementation Using Sentence-Level Contraints
+
+```python
+from tensorflow.keras.layers import Input, LSTM, Dense, Lambda
+from tensorflow.keras.models import Model
+from tensorflow.keras import backend as K
+from tensorflow.keras.losses import mse
+
+class VAE:
+    def __init__(self, input_dim, latent_dim, constraint_dim):
+        self.input_dim = input_dim
+        self.latent_dim = latent_dim
+        self.constraint_dim = constraint_dim
+        self.encoder = None
+        self.decoder = None
+        self.vae = None
+
+    def build_encoder(self):
+        inputs = Input(shape=(self.input_dim,))
+        h = LSTM(256)(inputs)
+        z_mean = Dense(self.latent_dim)(h)
+        z_log_var = Dense(self.latent_dim)(h)
+        z = Lambda(self.sampling)([z_mean, z_log_var])
+        constraints = Input(shape=(self.constraint_dim,))
+        combined = concatenate([z, constraints])
+        self.encoder = Model(inputs=[inputs, constraints], outputs=[z_mean, z_log_var, combined])
+
+    def build_decoder(self):
+        latent_inputs = Input(shape=(self.latent_dim + self.constraint_dim,))
+        h = LSTM(256, return_sequences=True)(latent_inputs)
+        outputs = Dense(self.input_dim, activation='softmax')(h)
+        self.decoder = Model(inputs=latent_inputs, outputs=outputs)
+
+    def sampling(self, args):
+        z_mean, z_log_var = args
+        epsilon = K.random_normal(shape=(K.shape(z_mean)[0], self.latent_dim), mean=0., stddev=1.)
+        return z_mean + K.exp(0.5 * z_log_var) * epsilon
+
+    def build_vae(self):
+        inputs = Input(shape=(self.input_dim,))
+        constraints = Input(shape=(self.constraint_dim,))
+        z_mean, z_log_var, z = self.encoder([inputs, constraints])
+        reconstructed_inputs = self.decoder(z)
+        self.vae = Model(inputs=[inputs, constraints], outputs=reconstructed_inputs)
+
+    def compile(self):
+        reconstruction_loss = mse(K.flatten(self.vae.inputs[0]), K.flatten(self.vae.outputs[0]))
+        reconstruction_loss *= self.input_dim
+        kl_loss = -0.5 * K.sum(1 + self.vae.inputs[1] - K.square(self.vae.inputs[0]) - K.exp(self.vae.inputs[1]), axis=-1)
+        vae_loss = K.mean(reconstruction_loss + kl_loss)
+        self.vae.add_loss(vae_loss)
+        self.vae.compile(optimizer='adam')
+
+    def train(self, x_train, constraint_data, epochs, batch_size):
+        self.vae.fit([x_train, constraint_data], epochs=epochs, batch_size=batch_size)
+
+    def generate_variations(self, constraint_data, num_variations):
+        variations = self.decoder.predict(constraint_data)
+        return variations
+```
+
+In this example, we have a `VAE` class that contains methods for building the encoder, decoder, and the complete VAE model. The `build_encoder` method constructs the encoder network, which takes both the input data and the sentence-level constraint representations. The `build_decoder` method constructs the decoder network, and the `build_vae` method combines the encoder and decoder to create the full VAE model.
+
+The `sampling` method implements the reparameterization trick to sample from the latent space. The `compile` method sets up the loss function of the VAE model, combining the reconstruction loss and the KL divergence loss.
+
+### Training
+
+To train the model, you can use the train method, which takes the input data  and constraint data as inputs and performs the training process. The `generate_variations` method allows you to generate variations of blogs by providing the constraint data as input and specifying the number of variations to generate.
+
+To use the `VAE` model, you can follow these steps:
+
+1. Instantiate the VAE class with the appropriate input dimensions, latent dimension, and constraint dimension.
+2. Build the encoder, decoder, and VAE models using the build_encoder, build_decoder, and build_vae methods, respectively.
+3. Compile the VAE model using the compile method.
+4. Train the model by calling the train method with your training data and constraint data. Adjust the number of epochs and batch size according to your requirements.
+5. Generate variations by using the generate_variations method, passing the constraint data and specifying the number of variations desired.
+
+Make sure to preprocess your blog data and constraint data appropriately before training and generating variations.
+
+Note that this is a basic example to demonstrate the structure of a VAE model that supports sentence-level constraints. Depending on the complexity of your task, you may need to customize and extend the model architecture and training process to achieve better performance.
+
+Remember to adapt the code to your specific use case and ensure the compatibility of the input data shapes and preprocessing steps.
+
+### Example Useage
+
+Here's an example of how you can use the VAE model to generate variations of blogs stored in a folder, where each blog is stored in a separate text file:
+
+```python
+import os
+
+# Define the path to the folder containing the blog text files
+blog_folder_path = "/path/to/blog/folder"
+
+# Read the blog text files from the folder
+blog_texts = []
+for filename in os.listdir(blog_folder_path):
+    if filename.endswith(".txt"):
+        file_path = os.path.join(blog_folder_path, filename)
+        with open(file_path, "r", encoding="utf-8") as file:
+            blog_texts.append(file.read())
+
+# Preprocess the blog texts as needed
+
+# ... (Tokenization, text cleaning, etc.)
+
+# Define your constraint data (e.g., topic representations) for each blog
+constraint_data = []
+
+# ... (Prepare constraint data based on your specific requirements)
+
+# Instantiate the VAE model with appropriate dimensions
+input_dim = ...  # Define the input dimension based on your data preprocessing
+latent_dim = ...  # Define the desired latent dimension
+constraint_dim = ...  # Define the dimension of your constraint data
+vae_model = VAE(input_dim, latent_dim, constraint_dim)
+
+# Build the VAE model
+vae_model.build_encoder()
+vae_model.build_decoder()
+vae_model.build_vae()
+vae_model.compile()
+
+# Convert the blog texts and constraint data to suitable input formats
+x_train = ...  # Convert blog texts to input format (e.g., numerical sequences or embeddings)
+constraint_data = ...  # Prepare constraint data in a suitable format (e.g., numerical representations)
+
+# Train the VAE model
+epochs = ...  # Set the number of training epochs
+batch_size = ...  # Set the batch size for training
+vae_model.train(x_train, constraint_data, epochs, batch_size)
+
+# Generate variations for a specific constraint
+constraint = ...  # Provide the constraint for generating variations (e.g., topic representation)
+num_variations = ...  # Specify the number of variations to generate
+constraint_data = ...  # Convert the constraint to a suitable format (e.g., numerical representation)
+variations = vae_model.generate_variations(constraint_data, num_variations)
+
+# Process and use the generated variations as needed
+# ...
+```
+
+In this example, we first read the blog texts from the folder and store them in a list. You can adjust the file reading process based on your specific file naming or folder structure.
+
+After preprocessing the blog texts and preparing the constraint data, we instantiate the VAE model with appropriate dimensions. We then build the VAE model, compile it, and proceed to convert the blog texts and constraint data to suitable input formats.
+
+Next, we train the VAE model using the `train` method by providing the blog text data (`x_train`) and the corresponding constraint data. Adjust the number of training epochs and batch size according to your requirements.
+
+Finally, to generate variations, we provide a specific constraint (e.g., topic representation) and convert it to a suitable format (`constraint_data`). We use the `generate_variations` method to generate the desired number of variations based on the provided constraint.
+
+Remember to adjust the code according to your specific preprocessing steps, constraint representation, and any additional processing you may need to perform on the generated variations.
+
+### Contraint Repersentation
+
+The representation of topics in the constraint data will depend on the specific approach you choose. Here are a few common ways to represent topics:
+
+1. One-Hot Encoding: Assign each topic a unique index, and represent each topic as a one-hot encoded vector. The length of the vector will be equal to the total number of topics, and the index corresponding to the topic will be set to 1, while all other indices will be set to 0. For example, if you have 5 topics, the vector [0, 1, 0, 0, 0] represents the second topic.
+
+2. Topic Embeddings: Use pre-trained word embeddings or topic-specific embeddings to represent topics. Each topic is represented as a dense vector of fixed dimensions. This approach allows for capturing semantic relationships between topics.
+
+3. Topic Keywords or Tags: Instead of using numerical representations, you can represent topics as keywords or tags. Each blog can be assigned one or multiple tags corresponding to its relevant topics. During training and generation, these tags can be converted into a suitable numerical representation, such as one-hot encoding or embedding vectors.
+
+The choice of topic representation depends on the available data, the complexity of the topics, and the specific requirements of your application. It's important to choose a representation that effectively captures the semantic meaning of the topics and aligns with the downstream tasks or constraints you want to impose on the VAE model.
+
+Remember to preprocess the constraint data according to the chosen representation before passing it to the VAE model.
+
+We could also repersent our constraint as a word embedding. Word embeddings capture the semantic meaning of words and can be a useful representation for imposing constraints on text generation.
+
+To use word embeddings as constraints, you would typically represent a constraint as a fixed-length vector that represents the desired semantic property or topic. This vector can be obtained by averaging the word embeddings of the words associated with the constraint. For example, if you want to impose a "technology" constraint, you could average the word embeddings of relevant technology-related terms.
+
+Here's an example of how you can incorporate word embeddings as constraints in the VAE model:
+
+1. Obtain pre-trained word embeddings: You can use pre-trained word embeddings such as Word2Vec, GloVe, or FastText. These embeddings are trained on large corpora and capture semantic relationships between words.
+
+2. Define your constraints: Identify the specific constraints you want to impose on the generated text. For example, you might have constraints like "technology", "entertainment", "sports", etc.
+
+3. Compute constraint embeddings: For each constraint, compute the constraint embedding by averaging the word embeddings of the relevant terms associated with the constraint. This will give you a fixed-length vector representation for each constraint.
+
+4. During training and generation: Pass the constraint embedding as an additional input to the VAE model. This constraint embedding can be concatenated with the input data or fed into an additional branch of the model. During training, the model will learn to generate variations that satisfy the given constraint.
+
+By incorporating word embeddings as constraints, the VAE model will learn to generate text variations that align with the desired semantic properties represented by the embeddings.
+
+Remember to preprocess your text data and word embeddings appropriately before training and generating variations.
+
+Ideally, it is beneficial if the blogs and the word embeddings used for constraints are from the same or similar embedding spaces. When the embeddings are aligned, the VAE model can better capture the semantic relationships between the blogs and the constraints, leading to more coherent and meaningful variations.
+
+Using the same word embeddings for both the blogs and constraints ensures that the model operates in a consistent semantic space. This helps in enforcing constraints effectively and generating variations that are coherent with the desired topics or properties.
+
+However, it's important to note that it is not strictly necessary for the blogs and the constraints to be from the exact same word embedding. In some cases, you may have separate embeddings for the blogs and the constraints, as long as they are reasonably similar and capture similar semantic properties.
+
+If you are using pre-trained word embeddings, make sure that the embeddings are trained on a large, diverse corpus that covers a wide range of topics. This will increase the chances of finding overlaps between the embedding spaces of the blogs and the constraints.
+
+If you have the flexibility to train your own word embeddings, you can consider training them on a corpus that is specifically relevant to your blog domain or topic. This can help ensure that the embeddings capture the specific characteristics and semantic relationships of your blogs.
+
+In summary, while using the same or similar word embeddings for both blogs and constraints is preferred, it is not a strict requirement. The key is to have embeddings that capture relevant semantic information and enable the model to learn meaningful relationships between the blogs and the constraints.
+
+### Dimensional Hyperparameters
+
+The dimensions for input, latent space, and constraint are determined by the specific requirements and characteristics of your data and task. Here's a brief explanation of each dimension:
+
+1. Input Dimension:
+
+   - The input dimension represents the dimensionality of the input data to the VAE model. In the case of text data, it could be the size of the vocabulary or the length of the word embeddings used to represent the text.
+   - For example, if you are using word embeddings of size 300 to represent your text data, the input dimension would be 300.
+
+2. Latent Dimension:
+
+   - The latent dimension represents the dimensionality of the latent space, which is the compressed representation of the input data.
+   -  It determines the richness of the representation and the capacity of the model to capture and generate variations.
+The choice of latent dimension is often subjective and depends on the complexity of the data and the desired level of expressiveness in the generated variations.
+   - Common choices for the latent dimension are typically in the range of 10 to a few hundred.
+
+3. Constraint Dimension:
+
+   - The constraint dimension represents the dimensionality of the constraint data that you want to impose on the VAE model.
+   - The specific requirements of your constraints and the representation chosen for them will dictate the dimensionality.
+   - For example, if you are using one-hot encoding to represent constraints, the constraint dimension would be equal to the number of possible constraints.
+
+When determining the dimensions, it is important to consider the complexity of your data, the available resources, and the trade-off between model complexity and training efficiency. It's recommended to experiment with different choices for the dimensions and observe the impact on the quality of generated variations.
+
+Additionally, note that the dimensions should be consistent across the encoder, decoder, and VAE model components to ensure compatibility and proper functioning of the model.
+
+If your constraint is represented as a word embedding, the constraint dimension would be equal to the dimensionality of the word embeddings used for representing the constraint.
+
+Word embeddings are typically dense vectors of fixed dimensions that capture the semantic meaning of words. The dimensionality of word embeddings is a predefined hyperparameter that is chosen during the training or selection of the word embedding model. Common dimensions for word embeddings range from 50 to 300.
+
+For example, if you are using word embeddings of size 200 to represent your constraints, the constraint dimension would be 200.
+
+In this case, each constraint would be represented by a fixed-length vector of the same dimensionality as the word embeddings. These constraint vectors can be passed as input to the VAE model alongside the input text data, allowing the model to learn to generate variations that satisfy the given constraints.
+
+Remember to preprocess your constraint data and ensure that the word embeddings used for constraints are aligned with the word embeddings used for representing the text data.
+
+A higher latent dimension in a VAE can allow for a greater capacity to provide more varied variations. The latent dimension controls the expressive power and flexibility of the latent space representation.
+
+With a higher latent dimension, the VAE model can capture more intricate patterns and complex variations in the input data. It provides a larger space for encoding and generating latent representations, enabling the model to produce a wider range of diverse outputs.
+
+Increasing the latent dimension allows the VAE to have more degrees of freedom to represent different aspects and nuances of the input data. It can capture finer details, variations, and subtle characteristics, resulting in more diverse and meaningful generated variations.
+
+However, it's important to note that simply increasing the latent dimension may not guarantee better performance or more desirable variations. The effectiveness of the latent dimension also depends on the nature of the input data, the complexity of the task, and the availability of training data. There's a trade-off between the latent dimension, model complexity, and training efficiency, and finding the right balance is crucial.
+
+In practice, it's recommended to experiment with different latent dimensions and evaluate the quality and diversity of the generated variations to determine the optimal latent dimension for your specific task and dataset.
 
 ## Misc
 
@@ -951,4 +1281,4 @@ The reparameterization trick is a key component in VAEs that enables efficient t
 
 **Notes**
 
-- Code and text generated by ChatGPT on 5.12.23
+- Code and text generated by ChatGPT on 5.12.23 and 5.14.23
