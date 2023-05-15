@@ -320,3 +320,9 @@ Note that when using the `entropy()` function, it automatically calculates the l
 Make sure to have the `scipy` library installed in your Python environment to use the `entropy()` function. You can install it using `pip install scipy`.
 
 Remember to adjust the code based on the specific probability distributions you want to compare using KL Divergence.
+
+## Notes
+
+- ## Notes
+
+- All text and examples provided by ChatGPT on 5.14.23 and 5.15.23
