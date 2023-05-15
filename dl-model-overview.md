@@ -66,136 +66,6 @@ where y_true represents the true class labels and y_pred represents the predicte
 
 These are just a few examples of loss functions used in deep learning. The choice of loss function depends on the problem at hand and the type of data being processed. Different loss functions have different properties and are suited for different types of tasks, and selecting an appropriate loss function is crucial for training effective deep learning models.
 
-### How MSE Works
-
-Mean Squared Error (MSE) is a commonly used loss function in regression tasks that quantifies the discrepancy between the predicted values and the true values of a continuous target variable. MSE measures the average squared difference between the predicted and true values, giving more weight to larger errors.
-
-The formula for Mean Squared Error is as follows:
-
-```
-MSE = (1/n) * Σ(y - ŷ)^2
-```
-
-where:
-
-- **MSE** is the Mean Squared Error.
-- **n** is the number of samples in the dataset.
-- **y** represents the true values of the target variable.
-- **ŷ** represents the predicted values of the target variable.
-
-To compute the MSE, you calculate the squared difference between each predicted value and its corresponding true value, sum up these squared differences, and then divide by the number of samples.
-
-MSE has several properties that make it a popular choice for regression problems. These include:
-
-1. Non-negativity: MSE is always non-negative, as it involves squaring the differences. A perfect prediction (ŷ = y) results in MSE of 0.
-
-2. Emphasis on larger errors: Squaring the differences amplifies larger errors, giving them more weight in the loss calculation. This property makes MSE sensitive to outliers or significant deviations between predicted and true values.
-
-3. Continuity and differentiability: MSE is a continuous and differentiable function, which allows for efficient gradient-based optimization during model training.
-
-When training a regression model using MSE as the loss function, the goal is to minimize the MSE value. The model's parameters are adjusted through techniques like gradient descent or backpropagation, which iteratively update the weights to minimize the MSE loss. This process involves calculating the gradients of the MSE with respect to the model parameters and using these gradients to update the weights in the direction that minimizes the loss.
-
-By minimizing the MSE, the model aims to find the parameter values that best fit the training data, reducing the overall squared differences between the predicted and true values. This leads to a model that provides predictions that are as close as possible to the true values.
-
-It's important to note that while MSE is widely used in regression tasks, it may not be the optimal choice for every scenario. Depending on the specific problem and the desired characteristics of the model, other loss functions tailored to the specific requirements of the task may be more appropriate.
-
-### How BCE Works
-
-Binary Cross-Entropy (BCE) is a commonly used loss function in binary classification tasks, where the goal is to predict a binary outcome (e.g., true/false, yes/no). BCE quantifies the discrepancy between the predicted probabilities and the true labels.
-
-The formula for Binary Cross-Entropy is as follows:
-
-```
-BCE = - (1/n) * Σ[y * log(ŷ) + (1 - y) * log(1 - ŷ)]
-```
-
-where:
-
-- **BCE** is the Binary Cross-Entropy.
-- **n** is the number of samples in the dataset.
-- **y** represents the true binary labels (0 or 1).
-- **ŷ** represents the predicted probabilities of the positive class.
-
-To compute the BCE, you calculate the log-loss for each sample and take the average over the entire dataset. The log-loss penalizes large differences between predicted probabilities and true labels, assigning a higher loss when the prediction is far from the true label.
-
-The BCE loss function has several properties that make it suitable for binary classification tasks:
-
-1. Probability interpretation: BCE loss operates on predicted probabilities, allowing models to output probabilities that can be interpreted as the confidence or likelihood of belonging to the positive class.
-
-2. Non-negativity: BCE loss is always non-negative, as it involves logarithms of predicted probabilities between 0 and 1.
-
-3. Asymmetry: BCE loss treats false positives (predicting 1 when the true label is 0) and false negatives (predicting 0 when the true label is 1) differently. The loss is higher when the model makes incorrect predictions on the positive class.
-
-When training a binary classification model using BCE as the loss function, the goal is to minimize the BCE value. The model's parameters, such as weights and biases, are adjusted through techniques like gradient descent or backpropagation to minimize the BCE loss. This involves computing the gradients of the BCE with respect to the model parameters and updating the weights in the direction that minimizes the loss.
-
-By minimizing the BCE loss, the model learns to make accurate predictions that align with the true binary labels. The model's output probabilities are adjusted to maximize the likelihood of the correct class while minimizing the log-loss penalty.
-
-It's important to note that BCE is specific to binary classification tasks with two classes. For multi-class classification problems, variants such as Categorical Cross-Entropy loss or Softmax Cross-Entropy loss are commonly used. These loss functions extend the concept of BCE to handle multiple classes.
-
-### How CCE Works
-
-Categorical Cross-Entropy (CCE) is a commonly used loss function in multi-class classification tasks, where the goal is to predict one out of multiple mutually exclusive classes. CCE quantifies the discrepancy between the predicted class probabilities and the true class labels.
-
-The formula for Categorical Cross-Entropy is as follows:
-
-```
-CCE = - (1/n) * ΣΣ(y * log(ŷ))
-```
-
-where:
-
-- **CCE** is the Categorical Cross-Entropy.
-- **n** is the number of samples in the dataset.
-- **y** is a one-hot encoded vector representing the true class labels.
-- **ŷ** is a vector of predicted class probabilities.
-
-To compute the CCE, you calculate the element-wise product of the true labels and the logarithm of the predicted probabilities for each sample. The negative sign ensures that the loss is minimized. Then, you sum up these values across all classes and average them over the entire dataset.
-
-The CCE loss function has several properties that make it suitable for multi-class classification tasks:
-
-1. Probability interpretation: CCE loss operates on predicted class probabilities, allowing models to output probabilities that represent the confidence or likelihood of belonging to each class.
-
-2. Non-negativity: CCE loss is always non-negative, as it involves logarithms of predicted probabilities between 0 and 1.
-
-3. Asymmetry: CCE loss penalizes larger differences between predicted probabilities and true labels, assigning a higher loss when the predicted probability for the correct class is lower.
-
-When training a multi-class classification model using CCE as the loss function, the goal is to minimize the CCE value. The model's parameters, such as weights and biases, are adjusted through techniques like gradient descent or backpropagation to minimize the CCE loss. This involves computing the gradients of the CCE with respect to the model parameters and updating the weights in the direction that minimizes the loss.
-
-By minimizing the CCE loss, the model learns to make accurate predictions that align with the true class labels. The model's output probabilities are adjusted to maximize the likelihood of the correct class while minimizing the log-loss penalty.
-
-It's important to note that CCE is specifically designed for multi-class classification problems with mutually exclusive classes. For scenarios where classes are not mutually exclusive or overlapping, other loss functions such as Softmax Cross-Entropy or Binary Cross-Entropy can be adapted or used in combination with appropriate modifications to handle the specific requirements of the task.
-
-### How Sparse CCE Works
-
-Sparse Categorical Cross-Entropy (Sparse CCE) is a variant of the Categorical Cross-Entropy (CCE) loss function that is commonly used in multi-class classification tasks where the true class labels are provided as integers instead of one-hot encoded vectors. It quantifies the discrepancy between the predicted class probabilities and the true class labels.
-
-In contrast to CCE, which expects one-hot encoded vectors for true class labels, Sparse CCE takes the true class labels as integers representing the class indices directly.
-
-The formula for Sparse Categorical Cross-Entropy is as follows:
-
-```
-Sparse CCE = - (1/n) * Σ(log(ŷ))
-```
-
-where:
-
-- **Sparse CCE** is the Sparse Categorical Cross-Entropy.
-- **n** is the number of samples in the dataset.
-- **ŷ** is a vector of predicted class probabilities.
-- The true class labels y are integers representing the class indices.
-
-To compute the Sparse CCE, you take the logarithm of the predicted probability corresponding to the true class label for each sample. The negative sign ensures that the loss is minimized. Then, you sum up these logarithmic values and average them over the entire dataset.
-
-Sparse CCE shares similar properties with CCE, such as probability interpretation, non-negativity, and asymmetry. It is suitable for multi-class classification tasks where the class labels are provided as integers.
-
-When training a multi-class classification model using Sparse CCE as the loss function, the goal is to minimize the Sparse CCE value. The model's parameters, such as weights and biases, are adjusted through techniques like gradient descent or backpropagation to minimize the Sparse CCE loss. This involves computing the gradients of the Sparse CCE with respect to the model parameters and updating the weights in the direction that minimizes the loss.
-
-By minimizing the Sparse CCE loss, the model learns to make accurate predictions that align with the true class labels provided as integers. The model's output probabilities are adjusted to maximize the likelihood of the correct class while minimizing the log-loss penalty.
-
-Sparse CCE is particularly useful when dealing with large multi-class classification problems, as it eliminates the need for one-hot encoding the true class labels, which can be memory-intensive. Instead, the true class labels are represented directly as integers.
-
-In summary, Sparse Categorical Cross-Entropy is a variant of Categorical Cross-Entropy that is suitable for multi-class classification tasks with true class labels provided as integers. It allows for efficient handling of large-scale classification problems without requiring one-hot encoding of the labels.
-
 ## Activation Functions
 
 Deep learning models use various activation functions to introduce non-linearity into the neural network, enabling them to learn complex relationships between inputs and outputs. Here are some commonly used activation functions in deep learning:
@@ -261,26 +131,6 @@ Deep learning models use various optimization algorithms to update the parameter
 7. **AdaGrad**: AdaGrad is another adaptive learning rate algorithm that scales the learning rate of each parameter based on the historical sum of squared gradients. It gives larger updates to parameters with smaller gradients, which can be helpful in dealing with sparse data or when different features have significantly different scales.
 
 These are just a few examples of optimization algorithms used in deep learning. The choice of optimization algorithm depends on factors such as the problem being solved, the size of the dataset, the complexity of the model, and the computational resources available. Each optimization algorithm has its strengths and limitations, and selecting the appropriate algorithm can significantly impact the training efficiency and performance of deep learning models.
-
-### How ADAM works
-
-The ADAM optimization algorithm maintains exponentially decaying average of past gradients and their squares, which are used to update the parameters. The algorithm incorporates two main concepts: momentum and adaptive learning rates.
-
-Here's a high-level overview of how ADAM works:
-
-1. Initialization: Initialize the parameters (weights and biases) of the neural network and set initial values for the first and second moment estimates.
-
-2. Compute Gradients: Calculate the gradients of the parameters with respect to the loss function using backpropagation during a forward-backward pass on a mini-batch of training data.
-
-3. Update First and Second Moments: Update the first moment estimate (mean of the gradients) and the second moment estimate (mean of the squared gradients) using exponential decay. These estimates are similar to the concepts of momentum and RMSprop, respectively.
-
-4. Bias Correction: Since the moment estimates are initialized with zeros and the updates occur in the beginning, they tend to be biased towards zero. To counteract this bias, a bias correction step is performed to adjust the moment estimates.
-
-5. Update Parameters: Finally, the parameters (weights and biases) of the neural network are updated using the bias-corrected moment estimates and the learning rate.
-
-The adaptive learning rates in ADAM allow it to automatically adjust the learning rate for each parameter based on the magnitude of their respective gradients and the estimated second moments. This helps in accelerating the convergence and improving the optimization process.
-
-ADAM has gained popularity in deep learning due to its effectiveness in a wide range of tasks. It combines the benefits of momentum optimization, which helps in faster convergence and escaping local minima, with the adaptive learning rates of RMSprop, which provides robustness to different scales of gradients.
 
 ## Applications
 
@@ -510,4 +360,4 @@ Overall, while Ricci flow is a powerful tool in differential geometry, its direc
 
 
 ## Notes
-- Text taken from ChatGPT on 5.14.23
+- Text generated by ChatGPT on 5.14.23
