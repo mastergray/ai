@@ -4,7 +4,7 @@
 
 The curvature of a Riemannian manifold can be calculated using the concept of the Riemann curvature tensor. The Riemann curvature tensor is a mathematical object that encodes the curvature properties of the manifold at each point. It is defined in terms of the metric tensor and its derivatives.
 
-The Riemann curvature tensor is denoted by R and has four indices: `R_{abcd}`. Here, a, b, c, and d are indices that run from 0 to n-1 (for an n-dimensional manifold). The Riemann curvature tensor is antisymmetric in its last two indices, i.e., R_{abcd} = -R_{abdc}, which reduces the number of independent components.
+The Riemann curvature tensor is denoted by R and has four indices: `R_{abcd}`. Here, a, b, c, and d are indices that run from 0 to n-1 (for an n-dimensional manifold). The Riemann curvature tensor is antisymmetric in its last two indices, i.e., `R_{abcd} = -R_{abdc}`, which reduces the number of independent components.
 
 The curvature tensor is related to the Christoffel symbols and the derivatives of the metric tensor through the following expression:
 
