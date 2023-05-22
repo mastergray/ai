@@ -830,3 +830,22 @@ Here's a high-level overview of how the Convolutional Operator is typically impl
 The Convolutional Operator in LieConv can be applied iteratively for multiple layers, allowing the model to capture information at different levels of abstraction. Each layer refines the node representations by incorporating information from larger neighborhoods and considering higher-order relationships.
 
 It's important to note that the specific implementation details of the Convolutional Operator in LieConv can vary depending on the variant of LieConv and the problem domain. The above description provides a general understanding of how LieConv utilizes group representations and convolution operations to perform graph convolutions while respecting symmetries.
+
+## Summary
+
+1. We began by discussing Riemann manifolds, which are mathematical structures used to describe curved spaces. We explored their properties, including smoothness, metrics, and curvature.
+
+2. We talked about the manifold hypothesis, which suggests that real-world data lies on a complex, nonlinear manifold. This manifold may have embedded within it a lower-dimensional representation that captures the underlying knowledge or patterns in the data.
+
+3. We explored the concept of decomposing a manifold into submanifolds and discussed how the isometry group and quotient spaces can be used to identify and study the geometric structures and properties of a manifold.
+
+4. We touched on topics such as parallel transport, geodesics, the Levi-Civita connection, and the role of the general linear group in studying geometric properties related to curvature.
+
+5. We discussed the possibility of "folding" and "unfolding" manifolds, and how transformations such as isometric inversions and braiding could impact the geometry of a manifold.
+
+6. We delved into the application of the manifold hypothesis in deep learning, where the goal is to learn the embedded knowledge representation within the manifold of a given dataset.
+
+7. We explored the LieConv model, which leverages group theory and Lie group representations to capture and exploit the symmetries and invariances present in graph-structured data, particularly in chemistry.
+
+8. Finally, we discussed the training process for models aiming to learn the knowledge representation embedded in a manifold, including the use of latent spaces, prediction tasks, and the comparison of such models to other deep learning approaches.
+
