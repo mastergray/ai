@@ -867,7 +867,8 @@ Keep in mind that the performance of the VAE in predicting the next image will d
 
 Certainly! Here's an example of how you can train a Variational Autoencoder (VAE) model using Keras to predict the next image in a sequence of images:
 
-```pythonimport numpy as np
+```python
+import numpy as np
 from tensorflow.keras.layers import Input, Flatten, Dense, Reshape
 from tensorflow.keras.layers import Conv2D, Conv2DTranspose
 from tensorflow.keras.models import Model
