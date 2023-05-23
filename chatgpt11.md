@@ -1,6 +1,6 @@
-### ChatGPT Conversation From 5.18.23
+# ChatGPT Conversation From 5.18.23
 
-## Summary
+### Summary
 
 1. We started by discussing Variational Autoencoders (VAEs) and their ability to learn equivalence classes of a manifold using a latent space.
 
