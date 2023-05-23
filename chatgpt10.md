@@ -1,6 +1,6 @@
-### ChatGPT Conversation From 5.17.23
+# ChatGPT Conversation From 5.17.23
 
-## Summary
+### Summary
 
 1. We began by discussing Riemann manifolds, which are mathematical structures used to describe curved spaces. We explored their properties, including smoothness, metrics, and curvature.
 
