@@ -1,6 +1,6 @@
-### ChatGPT Conversation From 5.21.23 (Part 2)
+# ChatGPT Conversation From 5.21.23 (Part 2)
 
-## Summary
+### Summary
 
 1. We discussed using a VAE (Variational Autoencoder) model to learn features from a list of n-dimensional vectors. We explored how to train the VAE model using Keras and extract features from the latent space.
 
