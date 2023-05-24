@@ -24,7 +24,7 @@
 
 11. Nonlinear functions are generally challenging to calculate due to the lack of closed-form solutions, complexity, computational requirements, sensitivity to initial conditions, and the absence of general solution methods. Analytical, numerical, approximation, and simulation methods are employed to calculate nonlinear functions.
 
-12, We explored the reasons why there is no general solution to nonlinear equations, including their complexity, lack of algebraic techniques, dependence on initial conditions, non-uniqueness of solutions, and mathematical incompleteness.
+12. We explored the reasons why there is no general solution to nonlinear equations, including their complexity, lack of algebraic techniques, dependence on initial conditions, non-uniqueness of solutions, and mathematical incompleteness.
 
 ## Transcript
 
