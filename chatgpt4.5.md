@@ -15,7 +15,7 @@ You asked about deep learning models that can classify an image into multiple, p
 
 6. We touched upon the use of quotient spaces and group equivariant networks (GNNs) in deep learning, where GNNs exploit symmetries in data by operating on quotient spaces.
 
-7.Lastly, we discussed the path integral and its use in physics, particularly in quantum mechanics. We clarified that while the path integral is not directly used in deep learning, some concepts from it, such as optimization and gradient descent, have connections to training deep learning models.
+7. Lastly, we discussed the path integral and its use in physics, particularly in quantum mechanics. We clarified that while the path integral is not directly used in deep learning, some concepts from it, such as optimization and gradient descent, have connections to training deep learning models.
 
 ## Transcript 
 
