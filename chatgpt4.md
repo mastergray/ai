@@ -433,7 +433,27 @@ n mathematics, an equivalence relation on a set is a binary relation that satisf
 For example, suppose we have the set $S={1,2,3,4,5}$ and we want to represent the equivalence relation $R$ on $S$ where two elements are equivalent if their difference is divisible by $3$. Then we have:
 
 ```
-R={(1,1),(2,2),(3,3),(4,4),(5,5),(1,4),(4,1),(2,5),(5,2),(3,6),(6,3),(1,7),(7,1),(2,8),(8,2),(4,7),(7,4),(5,8),(8,5)}
+R = {
+  (1,1),
+  (2,2),
+  (3,3),
+  (4,4),
+  (5,5),
+  (1,4),
+  (4,1),
+  (2,5),
+  (5,2),
+  (3,6),
+  (6,3),
+  (1,7),
+  (7,1),
+  (2,8),
+  (8,2),
+  (4,7),
+  (7,4),
+  (5,8),
+  (8,5)
+}
 ```
 
 In this representation, we include both $(a,b)$ and $(b,a)$ in the list since the relation is symmetric. The pairs $(a,a)$ are included for all $a\in S$ to satisfy the reflexivity property. The transitivity property is satisfied by the fact that if $(a,b)$ and $(b,c)$ are in the list, then $(a,c)$ must also be in the list.
